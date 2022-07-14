@@ -1,10 +1,10 @@
 package com.study.kjsld.examplejsdl.domain.post.repository
 
 
-import com.study.kjsld.examplejsdl.domain.post.aggregate.Author
 import com.study.kjsld.examplejsdl.domain.post.aggregate.Post
 import com.study.kjsld.examplejsdl.util.DateAuditing
 import java.time.Instant
+import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
@@ -17,15 +17,15 @@ import javax.persistence.Table
 @Entity
 @Table
 class PostEntity(
-    @Id @GeneratedValue(strategy= GenerationType.AUTO)
-    val id : Long? = null,
+    @Id @GeneratedValue(strategy= GenerationType.IDENTITY)
+    val postId : Long? = null,
     override val title : String,
     override val content : String,
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "id", nullable = false, )
+    @ManyToOne(fetch = FetchType.LAZY, optional=false) @JoinColumn(name = "authorId", nullable = false)
     override val author: AuthorEntity,
     override val createAt: Instant = Instant.now(),
     override val updateAt: Instant = Instant.now()
-) : Post, DateAuditing{
+) : Post,DateAuditing{
 
 
 //    override fun toString(): String {
@@ -35,7 +35,7 @@ class PostEntity(
     companion object {
         fun create(src: Post): PostEntity = with(src) {
             PostEntity(
-                id = (src as? PostEntity)?.id,
+                postId = (src as? PostEntity)?.postId,
                 title = title,
                 content = content,
                 author = author as AuthorEntity
