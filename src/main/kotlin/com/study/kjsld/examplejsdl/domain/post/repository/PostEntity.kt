@@ -6,9 +6,12 @@ import com.study.kjsld.examplejsdl.domain.post.aggregate.Post
 import com.study.kjsld.examplejsdl.util.DateAuditing
 import java.time.Instant
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.Table
 
 @Entity
@@ -18,10 +21,11 @@ class PostEntity(
     val id : Long? = null,
     override val title : String,
     override val content : String,
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "id", nullable = false, )
     override val author: AuthorEntity,
     override val createAt: Instant = Instant.now(),
     override val updateAt: Instant = Instant.now()
-) : Post, DateAuditing, Author by author{
+) : Post, DateAuditing{
 
 
 //    override fun toString(): String {
@@ -34,6 +38,7 @@ class PostEntity(
                 id = (src as? PostEntity)?.id,
                 title = title,
                 content = content,
+                author = author as AuthorEntity
             )
         }
     }

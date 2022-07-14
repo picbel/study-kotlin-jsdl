@@ -15,6 +15,6 @@ class AuthorEntity(
     override val introduction: String,
     override val createAt: Instant,
     override val updateAt: Instant,
-) : Author,DateAuditing {
+) : Author, DateAuditing {
 
 }
