@@ -53,11 +53,10 @@ class PostEntity(
 @Entity
 @Table
 class PostViewEntity(
-    @Id
+    @Id @GeneratedValue(strategy= GenerationType.IDENTITY)
     val viewId : Long? = null,
 
-    @MapsId
-    @OneToOne(fetch = FetchType.LAZY,cascade = [CascadeType.ALL])
+    @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], optional = false)
     @JoinColumn(name = "postId")
     val post: PostEntity,
 
