@@ -3,6 +3,8 @@ package com.study.kjsld.examplejsdl.domain.post.repository
 
 import com.study.kjsld.examplejsdl.domain.post.aggregate.Post
 import com.study.kjsld.examplejsdl.util.DateAuditing
+import org.springframework.data.jpa.repository.EntityGraph
+import org.springframework.data.jpa.repository.JpaRepository
 import java.time.Instant
 import javax.persistence.CascadeType
 import javax.persistence.Entity
@@ -12,6 +14,10 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.MapsId
+import javax.persistence.NamedAttributeNode
+import javax.persistence.NamedEntityGraph
+import javax.persistence.OneToOne
 import javax.persistence.Table
 
 @Entity
@@ -21,12 +27,12 @@ class PostEntity(
     val postId : Long? = null,
     override val title : String,
     override val content : String,
-    @ManyToOne(fetch = FetchType.LAZY, optional=false) @JoinColumn(name = "authorId", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "authorId")
     override val author: AuthorEntity,
     override val createAt: Instant = Instant.now(),
     override val updateAt: Instant = Instant.now()
 ) : Post,DateAuditing{
-
 
 //    override fun toString(): String {
 //        return "PostEntity(id=$id, title='$title', content='$content', author='$author', createAt=$createAt, updateAt=$updateAt)"
@@ -43,3 +49,19 @@ class PostEntity(
         }
     }
 }
+
+@Entity
+@Table
+class PostViewEntity(
+    @Id
+    val viewId : Long? = null,
+
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY,cascade = [CascadeType.ALL])
+    @JoinColumn(name = "postId")
+    val post: PostEntity,
+
+    val view: Long = 0
+)
+
+interface PostViewJpaDao : JpaRepository<PostViewEntity,Long>

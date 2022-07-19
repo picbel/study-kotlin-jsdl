@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
+import javax.transaction.Transactional
 
 
 @AutoConfigureDataJpa
@@ -32,6 +33,12 @@ class PostRepositoryImplTest {
     @Autowired
     private lateinit var authorDao: AuthorJpaRepository
 
+    @Autowired
+    private lateinit var postViewJpaDao: PostViewJpaDao
+
+    @Autowired
+    private lateinit var em: EntityManager
+
 
     companion object {
         val gon = AuthorEntity(authorId = 1L, name = "gon", introduction = "hi")
@@ -41,7 +48,7 @@ class PostRepositoryImplTest {
         @JvmStatic
         fun beforeAll(
             @Autowired dao: PostJpaRepository,
-            @Autowired authorDao: AuthorJpaRepository
+            @Autowired authorDao: AuthorJpaRepository,
         ) {
             println("beforeAll")
             authorDao.save(gon)
@@ -73,6 +80,47 @@ class PostRepositoryImplTest {
         }
     }
 
+    @Test @Transactional
+    fun lazyTest() {
+
+        var targetId : Long
+        val aaa = AuthorEntity(authorId = 3L, name = "aaa", introduction = "hi2")
+
+        println("=== PostViewEntity ===")
+        PostViewEntity(
+            post = PostEntity(
+                title = "저장잘됨?",
+                content = "ㅁㅁㅁㅁ",
+                author = authorDao.save(aaa)
+            )
+        ).run {
+
+            postViewJpaDao.save(this).also { targetId = this.viewId!! }
+            authorDao.flush()
+            postViewJpaDao.flush()
+        }
+//            PostViewEntity(
+//                post = PostEntity(
+//                    title = "저장잘됨?222",
+//                    content = "ㅁㅁㅁㅁ222",
+//                    author = aaa
+//                )
+//            ).run {
+//                postViewJpaDao.save(this)
+//            }
+        println("=== PostViewEntity end ===")
+
+        em.clear()
+        println("=== PostViewEntity select ===")
+        postViewJpaDao.findById(targetId).let {
+            println("postId = ${it.get().post.postId}, viewId=${it.get().viewId}")
+            println("postId = ${it.get().post.title}, viewId=${it.get().viewId}")
+            println("postId = ${it.get().post.author.name}, viewId=${it.get().viewId}")
+        }
+        println("=== PostViewEntity select end ===")
+    }
+
+
 
     @Test
     fun `제목과 작가를 null로 조회합니다`() {
@@ -81,7 +129,7 @@ class PostRepositoryImplTest {
         //when
         val result = sut.findByTitleAndAuthor(null, null)
         // then
-        assertEquals(result.size, 12)
+        assertEquals(result.size, 13) // test 끝나면 12로 수정 해야함
     }
 
     @Test
