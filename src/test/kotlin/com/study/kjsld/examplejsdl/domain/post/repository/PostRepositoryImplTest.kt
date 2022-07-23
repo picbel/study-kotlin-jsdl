@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
 import org.springframework.boot.test.context.SpringBootTest
-import javax.persistence.EntityManager
-import javax.transaction.Transactional
 
 
 @AutoConfigureDataJpa
@@ -19,19 +17,6 @@ class PostRepositoryImplTest {
 
     @Autowired
     private lateinit var sut: PostRepositoryImpl
-
-    @Autowired
-    private lateinit var dao: PostJpaDao
-
-    @Autowired
-    private lateinit var authorDao: AuthorJpaDao
-
-    @Autowired
-    private lateinit var postViewJpaDao: PostViewJpaDao
-
-    @Autowired
-    private lateinit var em: EntityManager
-
 
     companion object {
         val gon = AuthorEntity(authorId = 1L, name = "gon", introduction = "hi")
@@ -75,20 +60,16 @@ class PostRepositoryImplTest {
 
     @Test
     fun `제목과 작가를 null로 조회합니다`() {
-        //given
-
-        //when
-        val result = sut.findByTitleAndAuthor(null, null)
+        //given //when
+        val result = sut.findByTitleOrAuthor(null, null)
         // then
         assertEquals(result.size, 12)
     }
 
     @Test
     fun `제목과 작가를 입력하여 조회합니다`() {
-        //given
-
-        //when
-        val result = sut.findByTitleAndAuthor("1", "lyn")
+        //given //when
+        val result = sut.findByTitleOrAuthor("1", "lyn")
         //then
         assertEquals(result.size, 1)
 
@@ -96,20 +77,16 @@ class PostRepositoryImplTest {
 
     @Test
     fun `제목만 조회합니다`() {
-        //given
-
-        //when
-        val result = sut.findByTitleAndAuthor("1", null)
+        //given //when
+        val result = sut.findByTitleOrAuthor("1", null)
         // then
         assertEquals(result.size, 2)
     }
 
     @Test
     fun `작가만 조회합니다`() {
-        //given
-
-        //when
-        val result = sut.findByTitleAndAuthor(null, "gon")
+        //given //when
+        val result = sut.findByTitleOrAuthor(null, "gon")
         //then
         assertEquals(result.size, 7)
     }

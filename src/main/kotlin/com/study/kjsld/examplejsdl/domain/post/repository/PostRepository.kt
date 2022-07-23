@@ -9,23 +9,16 @@ import com.linecorp.kotlinjdsl.spring.data.listQuery
 import com.linecorp.kotlinjdsl.spring.data.querydsl.SpringDataCriteriaQueryDsl
 import com.study.kjsld.examplejsdl.domain.post.aggregate.Post
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
 
 interface PostRepository {
-    fun save(post: Post) : Post
-
-    fun findByTitleAndAuthor(title: String?, authorName: String?) : List<Post>
+    fun findByTitleOrAuthor(title: String?, authorName: String?) : List<Post>
 }
 
 @Repository
 internal class PostRepositoryImpl(
-    private val jpaRepo: PostJpaDao,
     private val queryFactory: SpringDataQueryFactory,
 ) : PostRepository {
-    @Transactional
-    override fun save(post: Post): Post = jpaRepo.save(PostEntity.create(post))
-
-    override fun findByTitleAndAuthor(title: String?, authorName: String?): List<Post> {
+    override fun findByTitleOrAuthor(title: String?, authorName: String?): List<Post> {
         return queryFactory.listQuery<PostEntity> {
             select(entity(PostEntity::class))
             from(entity(PostEntity::class))

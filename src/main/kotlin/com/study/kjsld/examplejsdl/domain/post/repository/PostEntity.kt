@@ -32,12 +32,7 @@ class PostEntity(
     override val author: AuthorEntity,
     override val createAt: Instant = Instant.now(),
     override val updateAt: Instant = Instant.now()
-) : Post,DateAuditing{
-
-//    override fun toString(): String {
-//        return "PostEntity(id=$id, title='$title', content='$content', author='$author', createAt=$createAt, updateAt=$updateAt)"
-//    }
-
+) : Post, DateAuditing{
     companion object {
         fun create(src: Post): PostEntity = with(src) {
             PostEntity(
